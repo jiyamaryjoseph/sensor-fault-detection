@@ -1,6 +1,5 @@
 from sensor.entity.artfact_entity import DataIngestionArtifact
 from sensor.entity.config_entity import TrainingPipelineConfig,DataIngestionConfig
-
 from sensor.logger import logging
 from sensor.exception import SensorException
 import os,sys

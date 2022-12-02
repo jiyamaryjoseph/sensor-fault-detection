@@ -23,9 +23,7 @@ class SensorData:
         except Exception as e:
             raise SensorException(e, sys)
 
-    def export_collection_as_dataframe(
-        self, collection_name: str, database_name: Optional[str] = None
-    ) -> pd.DataFrame:
+    def export_collection_as_dataframe(self, collection_name: str, database_name: Optional[str] = None) -> pd.DataFrame:
         try:
             """
             export entire collectin as dataframe:
@@ -37,7 +35,7 @@ class SensorData:
             else:
                 collection = self.mongo_client[database_name][collection_name]
 
-            print(list(collection))
+            
 
             df = pd.DataFrame(list(collection.find()))
 

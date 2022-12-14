@@ -1,15 +1,19 @@
 from sensor.exception import SensorException
-from sensor.entity.artfact_entity import DataIngestionArtifact
-from pandas import DataFrame
 from sensor.logger import logging
-from sklearn.model_selection import train_test_split
-from sensor.data_access.sensor_data import SensorData
-import sys,os
+from sensor.entity.artfact_entity import DataIngestionArtifact
 from sensor.entity.config_entity import DataIngestionConfig
+from pandas import DataFrame
+from sklearn.model_selection import train_test_split
+import sys,os
+from sensor.data_access.sensor_data import SensorData
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH,SCHEMA_DROP_COLS
+from sensor.utils.main_utils import read_yaml_file
+
 class DataIngestion:
     def __init__(self,data_ingestion_config:DataIngestionConfig):
         try:
             self.data_ingestion_config=data_ingestion_config
+            self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
         except Exception as e:
             raise SensorException(e,sys)
     
@@ -62,11 +66,44 @@ class DataIngestion:
             raise SensorException(e, sys)
 
     def initiate_data_ingestion(self)->DataIngestionArtifact:
+
+    
+        """
+        Method Name :   initiate_data_ingestion
+        Description :   This method initiates the data ingestion components of training pipeline 
+        
+        Output      :   train set and test set are returned as the artifacts of data ingestion components
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        logging.info("Entered initiate_data_ingestion method of Data_Ingestion class")
+
         try:
-            dataframe=self.export_data_into_feature_store()
-            self.split_data_as_train_test(dataframe=dataframe)
-            data_injection_artifact=DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path,
-            test_file_path=self.data_ingestion_config.testing_file_path)
-            return data_injection_artifact
+            dataframe = self.export_data_into_feature_store()
+
+           # _schema_config = read_yaml_file(file_path=SCHEMA_FILE_PATH)
+
+            dataframe = dataframe.drop(self._schema_config[SCHEMA_DROP_COLS], axis=1)
+
+            logging.info("Got the data from mongodb")
+
+            self.split_data_as_train_test(dataframe)
+
+            logging.info("Performed train test split on the dataset")
+
+            logging.info(
+                "Exited initiate_data_ingestion method of Data_Ingestion class"
+            )
+
+            data_ingestion_artifact = DataIngestionArtifact(
+                trained_file_path=self.data_ingestion_config.training_file_path,
+                test_file_path=self.data_ingestion_config.testing_file_path,
+            )
+
+            logging.info(f"Data ingestion artifact: {data_ingestion_artifact}")
+
+            return data_ingestion_artifact
         except Exception as e:
             raise SensorException(e,sys)

@@ -1,15 +1,18 @@
-from sensor.entity.artfact_entity import DataIngestionArtifact
-from sensor.entity.config_entity import TrainingPipelineConfig,DataIngestionConfig
+from sensor.entity.artfact_entity import DataIngestionArtifact,DataValidationArtifact
+from sensor.entity.config_entity import TrainingPipelineConfig,DataIngestionConfig,DataValidationConfig
 from sensor.logger import logging
 from sensor.exception import SensorException
 import os,sys
+from sensor.utils.main_utils import read_yaml_file
 from sensor.components.data_ingestion import DataIngestion
+from sensor.components.data_validation import DataValidation
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
 
 class TrainPipeline:
 
     def __init__(self):
         self.training_pipeline_config = TrainingPipelineConfig()
-       
+        self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
 
     def start_data_ingestion(self)->DataIngestionArtifact:
             try:
@@ -22,9 +25,15 @@ class TrainPipeline:
                logging.info("data ingestion topped ")
             except  Exception as e:
                 raise  SensorException(e,sys)
-    def start_data_validation(self):
+    def start_data_validation(self,data_ingestion_artifact=DataIngestionArtifact)->DataValidationArtifact:
             try:
-               pass
+               logging.info("data validation started")
+               data_validation_config = DataValidationConfig(training_pipeline_config=self.training_pipeline_config)
+               data_validation=DataValidation(data_ingestion_artifact=data_ingestion_artifact,
+               data_validation_config=data_validation_config)
+               data_validation_artifact=data_validation.initiate_data_validation()
+               return data_validation_artifact
+
             except  Exception as e:
                 raise  SensorException(e,sys)
     def start_data_tranformation(self):
@@ -51,5 +60,6 @@ class TrainPipeline:
     def run_pipeline(self):
             try:
                data_ingestion_artifact:DataIngestionArtifact= self.start_data_ingestion()
+               data_validation_artifact=self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             except  Exception as e:
                 raise  SensorException(e,sys)

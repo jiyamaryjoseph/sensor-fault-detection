@@ -24,6 +24,12 @@ DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.2
 TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
 
+PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
+MODEL_FILE_NAME = "model.pkl"
+SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
+SCHEMA_DROP_COLS = "drop_columns"
+
+
 """
 Data Validation realted contant start with DATA_VALIDATION VAR NAME step:2
 """
@@ -54,9 +60,15 @@ MODEL_TRAINER_EXPECTED_SCORE: float = 0.6
 MODEL_TRAINER_OVER_FIITING_UNDER_FITTING_THRESHOLD: float = 0.05
 
 
+"""
+Model evaluation ralated constant start with MODE evaluation VAR NAME
+"""
+MODEL_EVALUATION_DIR_NAME: str = "model_evaluation"
+MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
+MODEL_EVALUATION_REPORT_NAME= "report.yaml"
 
 
-PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
-MODEL_FILE_NAME = "model.pkl"
-SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
-SCHEMA_DROP_COLS = "drop_columns"
+MODEL_PUSHER_DIR_NAME = "model_pusher"
+MODEL_PUSHER_SAVED_MODEL_DIR = SAVED_MODEL_DIR
+
+

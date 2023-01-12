@@ -1,7 +1,7 @@
 
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.entity.artfact_entity import DataValidationArtifact,ModelTrainerArtifact,ModelEvaluationArtifact
+from sensor.entity.artifact_entity import DataValidationArtifact,ModelTrainerArtifact,ModelEvaluationArtifact
 from sensor.entity.config_entity import ModelEvaluationConfig
 import os,sys
 from sensor.ml.metric.classification_metric import get_classification_score

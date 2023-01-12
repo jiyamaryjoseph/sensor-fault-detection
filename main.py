@@ -12,7 +12,7 @@ from sensor.constant.application import APP_HOST, APP_PORT
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
 from fastapi.responses import Response
-# from sensor.ml.model.estimator import ModelResolver,TargetValueMapping
+from sensor.ml.model.estimator import ModelResolver,TargetValueMapping
 from sensor.utils.main_utils import load_object
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -24,6 +24,7 @@ def set_env_variable(env_file_path):
     if os.getenv('MONGO_DB_URL',None) is None:
         env_config = read_yaml_file(env_file_path)
         os.environ['MONGO_DB_URL']=env_config['MONGO_DB_URL']
+
 
 app = FastAPI()
 origins = ["*"]
@@ -53,7 +54,6 @@ async def train_route():
     except Exception as e:
         return Response(f"Error Occurred! {e}")
 
-
 @app.get("/predict")
 async def predict_route():
     try:
@@ -76,7 +76,6 @@ async def predict_route():
     except Exception as e:
         raise Response(f"Error Occured! {e}")
 
-
 def main():
     try:
         set_env_variable(env_file_path)
@@ -88,8 +87,6 @@ def main():
 
 
 if __name__=="__main__":
-    main()
-   
-    # set_env_variable(env_file_path)
-    # app_run(app, host=APP_HOST, port=APP_PORT)
-
+    #main()
+    set_env_variable(env_file_path)
+    app_run(app, host=APP_HOST, port=APP_PORT)

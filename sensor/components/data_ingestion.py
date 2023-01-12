@@ -1,6 +1,6 @@
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.entity.artfact_entity import DataIngestionArtifact
+from sensor.entity.artifact_entity import DataIngestionArtifact
 from sensor.entity.config_entity import DataIngestionConfig
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split

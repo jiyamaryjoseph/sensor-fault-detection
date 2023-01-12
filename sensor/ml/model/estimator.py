@@ -13,6 +13,8 @@ class TargetValueMapping:
         return dict(zip(mapping_response.values(), mapping_response.keys()))
 
 
+
+
 #Write a code to train model and check the accuracy.
 
 class SensorModel:
@@ -31,6 +33,8 @@ class SensorModel:
             return y_hat
         except Exception as e:
             raise e
+    
+
 class ModelResolver:
 
     def __init__(self,model_dir=SAVED_MODEL_DIR):
@@ -66,3 +70,5 @@ class ModelResolver:
             return True
         except Exception as e:
             raise e
+
+

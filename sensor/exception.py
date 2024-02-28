@@ -1,5 +1,4 @@
-
-import sys #system-specific parameters and functions
+import sys
 
 
 def error_message_detail(error, error_detail: sys):

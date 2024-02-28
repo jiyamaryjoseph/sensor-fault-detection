@@ -2,24 +2,11 @@ import os
 from sensor.constant.s3_bucket import TRAINING_BUCKET_NAME
 
 SAVED_MODEL_DIR =os.path.join("saved_models")
-
-
-# defining common constant variable for training pipeline step:1
+# defining common constant variable for training pipeline
+TARGET_COLUMN = "class"
 PIPELINE_NAME: str = "sensor"
 ARTIFACT_DIR: str = "artifact"
 FILE_NAME: str = "sensor.csv"
-TARGET_COLUMN = "class"
-
-
-"""
-Data Ingestion related constant start with DATA_INGESTION VAR NAME step:1
-"""
-DATA_INGESTION_COLLECTION_NAME: str = "sensor"
-DATA_INGESTION_DIR_NAME: str = "data_ingestion"
-DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
-DATA_INGESTION_INGESTED_DIR: str = "ingested"
-DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.2
-
 
 TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
@@ -31,7 +18,16 @@ SCHEMA_DROP_COLS = "drop_columns"
 
 
 """
-Data Validation realted contant start with DATA_VALIDATION VAR NAME step:2
+Data Ingestion related constant start with DATA_INGESTION VAR NAME
+"""
+DATA_INGESTION_COLLECTION_NAME: str = "sensor"
+DATA_INGESTION_DIR_NAME: str = "data_ingestion"
+DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
+DATA_INGESTION_INGESTED_DIR: str = "ingested"
+DATA_INGESTION_TRAIN_TEST_SPLIT_RATION: float = 0.2
+
+"""
+Data Validation realted contant start with DATA_VALIDATION VAR NAME
 """
 
 DATA_VALIDATION_DIR_NAME: str = "data_validation"
@@ -48,7 +44,6 @@ DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
 DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = "transformed"
 DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object"
 
-
 """
 Model Trainer ralated constant start with MODE TRAINER VAR NAME
 """
@@ -61,7 +56,7 @@ MODEL_TRAINER_OVER_FIITING_UNDER_FITTING_THRESHOLD: float = 0.05
 
 
 """
-Model evaluation ralated constant start with MODE evaluation VAR NAME
+Model Trainer ralated constant start with MODE TRAINER VAR NAME
 """
 MODEL_EVALUATION_DIR_NAME: str = "model_evaluation"
 MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
@@ -70,5 +65,3 @@ MODEL_EVALUATION_REPORT_NAME= "report.yaml"
 
 MODEL_PUSHER_DIR_NAME = "model_pusher"
 MODEL_PUSHER_SAVED_MODEL_DIR = SAVED_MODEL_DIR
-
-

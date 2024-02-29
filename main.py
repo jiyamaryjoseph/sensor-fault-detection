@@ -4,7 +4,7 @@ import os,sys
 from sensor.logger import logging
 from sensor.pipeline import training_pipeline
 from sensor.pipeline.training_pipeline import TrainPipeline
-import os
+import io
 from sensor.utils.main_utils import read_yaml_file
 from sensor.constant.training_pipeline import SAVED_MODEL_DIR
 from fastapi import FastAPI
@@ -15,7 +15,11 @@ from fastapi.responses import Response
 from sensor.ml.model.estimator import ModelResolver,TargetValueMapping
 from sensor.utils.main_utils import load_object
 from fastapi.middleware.cors import CORSMiddleware
-import os
+from fastapi import File,UploadFile
+import pandas as pd
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
+from fastapi.responses import JSONResponse
+
 
 env_file_path=os.path.join(os.getcwd(),"env.yaml")
 
@@ -54,13 +58,19 @@ async def train_route():
     except Exception as e:
         return Response(f"Error Occurred! {e}")
 
-@app.get("/predict")
-async def predict_route():
+@app.post("/predict")
+async def predict_route(data:UploadFile):
+    
     try:
         #get data from user csv file
         #conver csv file to dataframe
-
-        df=None
+        content = await data.read()
+        
+        df = pd.read_csv(io.StringIO(content.decode('utf-8')))
+        
+        _schema_config = read_yaml_file(SCHEMA_FILE_PATH)
+        df = df.drop(_schema_config["drop_columns"],axis=1)
+    
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
         if not model_resolver.is_model_exists():
             return Response("Model is not available")
@@ -68,13 +78,24 @@ async def predict_route():
         best_model_path = model_resolver.get_best_model_path()
         model = load_object(file_path=best_model_path)
         y_pred = model.predict(df)
-        df['predicted_column'] = y_pred
-        df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
         
-        #decide how to return file to user.
+        df['predicted_column'] = y_pred
+        
+        df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
+        print(df)
+        
+        predictions=pd.DataFrame(df.index.values,columns=['index'])
+       
+        predictions['predicted_column'] = df[['predicted_column']]
+        
+        predictions = predictions.to_dict(orient='records')
+        print(predictions)
+        
+        return JSONResponse(content={"predictions": predictions})
         
     except Exception as e:
-        raise Response(f"Error Occured! {e}")
+        
+        return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
 
 def main():
     try:

@@ -4,7 +4,7 @@ from sensor.entity.artifact_entity import DataIngestionArtifact, DataValidationA
 from sensor.entity.config_entity import DataValidationConfig
 from sensor.exception import SensorException
 from sensor.logger import logging
-from sensor.utils.main_utils import read_yaml_file,write_yaml_file
+from sensor.utils.main_utils import read_yaml_file,write_yaml_file,update_yaml_dropcolumns
 from scipy.stats import ks_2samp
 import pandas as pd
 import os,sys
@@ -19,8 +19,21 @@ class DataValidation:
         except Exception as e:
             raise  SensorException(e,sys)
     
-    def drop_zero_std_columns(self,dataframe):
-        pass
+    def zero_std_columns_exit(self,dataframe:pd.DataFrame)->bool:
+        try:
+            
+            tochkstd_df=dataframe.drop('class',axis=1)
+            std_dev = tochkstd_df.std()  # Calculate standard deviation for each column
+            zero_std_columns = std_dev[std_dev == 0].index  # Find columns with zero standard deviation
+            # print(zero_std_columns.dtype)
+            if not zero_std_columns.empty:
+                logging.info(f"zero std deviation columns are : {zero_std_columns}")
+                # update_yaml_dropcolumns(SCHEMA_FILE_PATH,zero_std_columns)                         
+                return False  
+            else:
+                return True  
+        except Exception as e:
+            raise SensorException(e,sys)
 
 
     def validate_number_of_columns(self,dataframe:pd.DataFrame)->bool:
@@ -99,6 +112,11 @@ class DataValidation:
             train_dataframe = DataValidation.read_data(train_file_path)
             test_dataframe = DataValidation.read_data(test_file_path)
 
+    
+            
+            
+           
+            
             #Validate number of columns
             status = self.validate_number_of_columns(dataframe=train_dataframe)
             if not status:
@@ -106,7 +124,7 @@ class DataValidation:
             status = self.validate_number_of_columns(dataframe=test_dataframe)
             if not status:
                 error_message=f"{error_message}Test dataframe does not contain all columns.\n"
-        
+
 
             #Validate numerical columns
 
@@ -117,6 +135,20 @@ class DataValidation:
             status = self.is_numerical_column_exist(dataframe=test_dataframe)
             if not status:
                 error_message=f"{error_message}Test dataframe does not contain all numerical columns.\n"
+            
+            
+            
+            # checks for zero standard deviation columns in the DataFrame
+            
+            status=self.zero_std_columns_exit(dataframe=train_dataframe)
+            if  not status:
+                logging.info("Train dataframe contain zero standard deviation column ")
+            
+            status = self.zero_std_columns_exit(dataframe=test_dataframe)
+            if  not status:
+                logging.info("Test dataframe contain zero standard deviation column ")
+            
+            
             
             if len(error_message)>0:
                 raise Exception(error_message)
